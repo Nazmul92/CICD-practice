@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
@@ -24,8 +24,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run FastAPI application
+      - name: Run tests
         run: |
-          uvicorn main:app --host 127.0.0.1 --port 8000
+          python -m pytest tests/
 
-
+      - name: Start FastAPI server and check health
+        run: |
+          uvicorn main:app --host 0.0.0.0 --port 8000 &
+          sleep 5  # Wait for the server to start
+          curl http://localhost:8000/
